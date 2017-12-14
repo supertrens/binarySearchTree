@@ -1,7 +1,7 @@
 /*This homework is to practice insertion and deletion 
- *in Binary search tre
- *
+ *in Binary search tree
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -11,54 +11,108 @@
 
 //Bst stands for Binary Search Tree Node
 struct BstNode{
-	int data;
-	struct BstNode *leftChild;
-	struct BstNode *rightChild;
+    int data;
+    struct BstNode *leftChild;
+    struct BstNode *rightChild;
 };
 
 //will keep track of the size of the input without comma
  int count = 0 ;
 
-//function to allocate space to new node
-struct BstNode* createNewNode(int data){
- 	struct BstNode *newNode;
- 	newNode = (struct BstNode*)malloc(sizeof(struct BstNode));
 
- 	newNode->data = data;
- 	newNode->leftChild = NULL;
- 	newNode->rightChild = NULL;
- 	return newNode;
-}
 //check if the data is in the tree
 bool SearchElement(struct BstNode* rootPointer , int data){
-	if(rootPointer == NULL) 
-		return false;
-	else if(rootPointer->data == data) 
-		return true;
-	else if(data <= rootPointer->data)
-		return SearchElement(rootPointer->leftChild , data);
-	else return SearchElement(rootPointer->rightChild , data);
+    if(rootPointer == NULL) 
+        return false;
+    else if(rootPointer->data == data) 
+        return true;
+    else if(data <= rootPointer->data)
+        return SearchElement(rootPointer->leftChild , data);
+    else return SearchElement(rootPointer->rightChild , data);
 }
+
+// function that retrieves the level count of your tree
+int getLevelCount(struct BstNode *node)
+{
+    if (node == NULL)
+    {
+        return 0;
+    }
+    int leftMaxLevel = 1 + getLevelCount(node->leftChild);
+    int rightMaxLevel = 1 + getLevelCount(node->rightChild);
+    if (leftMaxLevel > rightMaxLevel)
+    {
+        return leftMaxLevel;
+    }
+    else
+    {
+        return rightMaxLevel;
+    }
+}
+
+/**********
+ * I was able to print the bst  credit to this thread
+ * https://stackoverflow.com/questions/37062169/how-to-print-elements-from-binary-tree-by-level-in-c
+ */
+// function that prints a specific level of the tree:
+void printLevel(struct BstNode* node, int level)
+{
+    if (node != NULL && level == 0)
+    {
+        printf("%d\t", node->data);
+    }   
+    else if (node != NULL)
+    {
+        printLevel(node->leftChild, level - 1);
+        printLevel(node->rightChild, level - 1);
+    } else{
+        printf("*\t");
+    }
+}
+
+//print every level of your tree (starting by the root node):
+void printElements(struct BstNode *node)
+{
+    int i;
+    int levelCount = getLevelCount(node);
+    for (i = 0; i < levelCount; i++)
+    {
+        printLevel(node, i);
+        printf("\n");
+    }
+}
+
+
+//function to allocate space to new node
+struct BstNode* createNewNode(int data){
+    struct BstNode *newNode;
+    newNode = (struct BstNode*)malloc(sizeof(struct BstNode));
+
+    newNode->data = data;
+    newNode->leftChild = NULL;
+    newNode->rightChild = NULL;
+    return newNode;
+}
+
 
 //function to add element to the root 
 //and also keep track of the left and right siblings pointers
 struct BstNode* InsertElement (struct BstNode *rootPointer , int data){
-	
+    
 
     // if the tree or substree is empty we create the first node
-	if(rootPointer == NULL){		
-		rootPointer = createNewNode(data);	
-	}
-	else if( data <= rootPointer->data){
-		if(rootPointer->leftChild == NULL)
-		rootPointer->leftChild = InsertElement(rootPointer->leftChild , data);
-	}
-	else{
+    if(rootPointer == NULL){        
+        rootPointer = createNewNode(data);  
+    }
+    else if( data <= rootPointer->data){
+        rootPointer->leftChild = InsertElement(rootPointer->leftChild , data);
+    }
+    else{
        
-		rootPointer->rightChild = InsertElement(rootPointer->rightChild , data);
+        rootPointer->rightChild = InsertElement(rootPointer->rightChild , data);
 
-	}
-	return rootPointer;	
+    }
+    return rootPointer; 
 }
 
 struct BstNode * minValueNode(struct BstNode* node)
@@ -127,9 +181,9 @@ int* parseInputString(char * searchTreeInput){
 
     const char *valueCopy = searchTreeInput;
     do {
-    	//Scans valueCopy for the occurrence of any comma,
-    	// returning the number of characters of str1 
-    	//read before this first occurrence.
+        //Scans valueCopy for the occurrence of any comma,
+        // returning the number of characters of str1 
+        //read before this first occurrence.
         size_t field_len = strcspn(valueCopy,",");
         sscanf(valueCopy,"%d,",&num);
         numArray[count] = num;    
@@ -145,7 +199,7 @@ int* parseInputString(char * searchTreeInput){
 
 int main(){
 
-    struct BstNode *rootPointer = NULL;
+    struct BstNode *rootPointer , *head = NULL;
     
     //the program will store the element from stdin here
     // char searchTreeInput[MAX_LIMIT];
@@ -163,48 +217,50 @@ int main(){
     //calling insertElement for each of the value of the user input
     printf("Create Binary search tree \n");
     for(i = 0 ; i < count ; i ++){
+        //take the value numArr[i];
+        data = *(numArray+i);
+        rootPointer = InsertElement(rootPointer , data);
 
-    	//take the value numArr[i];
-    	data = *(numArray+i);
-    	rootPointer = InsertElement(rootPointer , data);
+        //keep the head adress for printing
+        if( i = 0)
+            head = rootPointer;
+        
     }
     printf("\n");
 
-    // displayTree(rootPointer);
+    printElements(head);
+    printf("\n");
     
-    int myOption;
+    char myOption;
     
-
-    int numberToSearch;
     int numberToDelete;
     bool stop = false;
+    printf("Delete element? (Y/N): ");
     while(!stop){
-    	printf("Enter an option 1 search , 2 delete , 3 stop\n");
-        scanf("%d" , &myOption);
-	    switch(myOption){
-	      	case 1: 
+        
+        
+        scanf("%c" , &myOption);
+        fflush(stdin);
 
-	      		printf("Enter the number to search \n");
-	      		scanf("%d" , &numberToSearch);
-	    		if(SearchElement(rootPointer , numberToSearch))
-	    			printf("Yea we found %d\n" , numberToSearch);
-	    		else
-	    			printf("%d Not in binary search tree\n" , numberToSearch);
-	    		break;
-	    	case 2: 
-	    	    fflush(stdin);
-	    		printf("Enter an element to delete\n");
-	    		scanf("%d", &numberToDelete);
-	    		if(SearchElement(rootPointer , numberToDelete)){
-	    			deleteNode(rootPointer, numberToDelete);
-	    			printf("%d is deleted \n", numberToDelete );
-	    		}
-	    		else printf(" %d Not in BST\n" , numberToDelete);
-	    		break;
-	    	default:
-	    		stop = true;
-   		 }    
-      }  
+        if(myOption=='y' || myOption == 'Y'){
+            printf("Choice element: ");
+                scanf("%d", &numberToDelete);
+                if(SearchElement(rootPointer , numberToDelete)){
+                    //if the element exist in the BST , I perform the search
+                    deleteNode(rootPointer, numberToDelete);
+                    printf("New Binary search tres\n\n");
+                    //and print the new BST
+                    printElements(head);
+                }
+                else 
+                    printf(" %d is not int the Tree\n\n" , numberToDelete);
+                printf("Delete element? (Y/N): ");
+        }
+        if(myOption == 'n' || myOption =='N') 
+            stop = true;
+
+    }  
+    printf("\n");
    
     return 0;
 }
